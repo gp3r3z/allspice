@@ -12,18 +12,23 @@
         </div>
         <div class="col-9 bg-success">
             <div class="row">
-                <h1>{{ recipe.title }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
+                <div class="col-8">
+                    <h1>{{ recipe.title }}</h1>
+                </div>
+                <div class="col-3 text-center mt-2">
+                    <button @click="removeRecipe(recipe.id)" v-if="recipe.creatorId == account.id" class="btn"><i
+                            class="mdi mdi-delete "></i></button>
+                </div>
             </div>
             <div class="row justify-content-around ">
                 <div class="col-6 bg-dark p-3">
                     <div class="row justify-content-center">
                         <span class="col-7">
-                            <h3>Recipe Info</h3>
+                            <h3 class="border-bottom">Recipe Info</h3>
                         </span>
-                        <span class="col-1">
-                            <i class="mdi mdi-pencil rounded bg-info fs-3"></i>
+                        <span class="col-1" v-if="recipe.creatorId == account.id">
+                            <button @click="editRecipe" class="btn"><i class="mdi mdi-pencil rounded text-white fs-3"
+                                    :class="{ 'edited': edit == true }"></i></button>
                         </span>
 
                     </div>
@@ -31,10 +36,13 @@
                 </div>
                 <div class="col-6 bg-dark ing-body p-3 ">
                     <div class="row text-center">
-                        <h3>Ingredients </h3>
+                        <h3 class=" border-bottom">Ingredients </h3>
+                    </div>
+                    <div class="row" v-for="i in ingredients">
+                        <Ingredient :ingredients="i" />
                     </div>
 
-                    <div class="row ing-bottom mb-3 ">
+                    <div class="row ing-bottom mb-3 " v-if="edit">
                         <div class="col-10">
                             <input type="text" class="form-control" placeholder="Add Ingredient"
                                 aria-label="add ingredient" aria-describedby="basic-addon1">
@@ -58,27 +66,35 @@ import { computed, ref, onMounted } from 'vue';
 import Pop from '../utils/Pop.js';
 import { logger } from '../utils/Logger.js';
 import { recipesService } from '../services/RecipesService.js';
+import { Modal } from 'bootstrap'
 export default {
 
     setup() {
         const input = ref({})
-        async function getActiveRecipeIngredients() {
-            try {
-                await recipesService.getActiveRecipeIngredients();
-            }
-            catch (error) {
-                Pop.error(error);
-                logger.log(error);
-            }
-        }
-        // TODO working on getting add ingredients to load
-        // onMounted(() => {
-        //     getActiveRecipeIngredients()
-        // });
+
         return {
+            edit: computed(() => AppState.edit),
             input,
+            account: computed(() => AppState.account),
             recipe: computed(() => AppState.activeRecipe),
-            ingredients: computed(() => AppState.ingredients)
+            ingredients: computed(() => AppState.activeIngredients),
+            async editRecipe() {
+                try {
+                    AppState.edit = true
+                } catch (error) {
+                    Pop.error(error)
+                    logger.log(error)
+                }
+            },
+            async removeRecipe(recipeId) {
+                try {
+                    await recipesService.removeRecipe(recipeId)
+                    Modal.getOrCreateInstance('#recipeModal').hide()
+                } catch (error) {
+                    Pop.error(error)
+                    logger.log(error)
+                }
+            }
         }
     }
 };
@@ -93,5 +109,9 @@ export default {
 .ing-bottom {
     position: absolute;
     bottom: 0px;
+}
+
+.edited {
+    color: red
 }
 </style>

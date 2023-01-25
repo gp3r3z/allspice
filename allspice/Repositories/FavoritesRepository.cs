@@ -28,20 +28,22 @@ public class FavoritesRepository
     {
         string sql = @"
     SELECT
-    rec.*,
+   
     fav.*,
+    rec.*,
     cr.*
     FROM favorites fav
     JOIN recipes rec ON rec.id = fav.recipeId
     JOIN accounts cr ON rec.creatorId = cr.id
     WHERE fav.accountId = @accountId; 
     ";
-        List<MyFavorites> myFavorites = _db.Query<MyFavorites, Favorite, Account, MyFavorites>(sql, (rec, fav, cr) =>
+        List<MyFavorites> myFavorites = _db.Query<MyFavorites, Favorite, Account, MyFavorites>(sql, (fav, rec, cr) =>
         {
-            rec.RecipeId = fav.Id;
-            rec.AccountId = cr.Id;
-            rec.FavoriteId = fav.Id;
-            return rec;
+
+            fav.RecipeId = rec.Id;
+            fav.AccountId = cr.Id;
+            fav.FavoriteId = fav.Id;
+            return fav;
         }, new { accountId }).ToList();
 
         return myFavorites;

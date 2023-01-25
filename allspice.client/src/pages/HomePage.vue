@@ -5,20 +5,29 @@
       <div class="col-5 bg-dark rounded p-1 filter-row">
         <section class="row  text-center">
           <div class="col-4  ">
-            <button class="btn filter-btn ">MyRecipes</button>
+            <button @click="getMyRecipes(account.id)" class="btn filter-btn" :class="{
+              'activeFilter':
+                filter == 'myRecipe'
+            }">MyRecipes</button>
           </div>
           <div class="col-4  ">
-            <button class="btn filter-btn activeFilter" style="width:100px">Home</button>
+            <button @click="getAllRecipes" class="btn filter-btn " style="width:100px" :class="{
+              'activeFilter':
+                filter == 'home'
+            }"> Home </button>
           </div>
-          <div class="col-4  ">
-            <button class="btn filter-btn ">Favorites</button>
+          <div class=" col-4 ">
+            <button @click="getMyFavorite" class=" btn filter-btn " :class="{
+              'activeFilter':
+                filter == 'favorite'
+            }">Favorites</button>
           </div>
         </section>
       </div>
 
     </section>
     <!-- SECTION Card -->
-    <section class="row mx-3">
+    <section class=" row mx-3">
       <div v-for="r in recipes" class="col-4">
         <RecipeCard :recipe="r" class="selectable" />
       </div>
@@ -41,6 +50,7 @@ import Pop from '../utils/Pop.js';
 import { logger } from '../utils/Logger.js';
 import { recipesService } from '../services/RecipesService.js'
 import { AppState } from "../AppState.js";
+import { accountService } from '../services/AccountService.js';
 
 export default {
   setup() {
@@ -48,6 +58,7 @@ export default {
     async function getRecipes() {
       try {
         await recipesService.getRecipes()
+        AppState.filter = 'home'
 
       } catch (error) {
         Pop.error(error);
@@ -59,7 +70,35 @@ export default {
     })
     return {
       recipes: computed(() => AppState.recipes),
-
+      account: computed(() => AppState.account),
+      filter: computed(() => AppState.filter),
+      async getMyRecipes(accountId) {
+        try {
+          await recipesService.getMyRecipes(accountId)
+          AppState.filter = 'myRecipe'
+        } catch (error) {
+          Pop.error(error);
+          logger.log(error)
+        }
+      },
+      async getAllRecipes() {
+        try {
+          await recipesService.getRecipes()
+          AppState.filter = 'home'
+        } catch (error) {
+          Pop.error(error);
+          logger.log(error)
+        }
+      },
+      async getMyFavorite() {
+        try {
+          await accountService.getMyFavorite()
+          AppState.filter = 'favorite'
+        } catch (error) {
+          Pop.error(error);
+          logger.log(error)
+        }
+      }
     };
   }
 }
