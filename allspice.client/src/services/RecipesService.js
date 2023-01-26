@@ -72,8 +72,11 @@ class RecipesService {
     // TODO work on getting recipes to work 
     async searchRecipe(searchInput) {
         logger.log('searching with the param ', searchInput.param)
-        const res = await api.get(`api/recipes?id=180`)
+        const res = await api.get(`api/recipes`)
+        AppState.recipes = res.data
 
+
+        AppState.recipes = AppState.recipes.filter((r) => r.category.toString().toUpperCase().includes(searchInput.param.toUpperCase()))
         logger.log("[Searching Recipes]", res.data)
     }
     async updateRecipe(updateData, recipeId) {
