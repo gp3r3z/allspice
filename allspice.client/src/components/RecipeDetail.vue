@@ -5,10 +5,14 @@
 
             </div>
             <div class="modal-header">
+
                 <h3 class="text-center mx-3">Recipe Details</h3>
-                <button type="button" class="btn-close mx-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button v-if="!edit" type="button" class="btn-close mx-3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+                <button v-else @click="editRecipe(edit)" type="button" class="btn-close mx-3 bg-danger"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="col-3 p-0">
+            <div class=" col-3 p-0">
                 <img :src="recipe.img" class="img-custom" />
             </div>
             <div class="col-9 bg-success">
@@ -71,9 +75,11 @@
                                     aria-describedby="basic-addon1">
                             </div>
                             <div class="row justify-content-end mt-2">
+
                                 <button @click="addIngredient(inputIngredient, recipe.id)"
-                                    class="input-group-text btn btn-light col-2" id="basic-addon1"><i
+                                    class="input-group-text btn btn-light col-3" id="basic-addon1"><i
                                         class=" mdi mdi-plus"></i></button>
+
                             </div>
                         </div>
 
