@@ -1,14 +1,15 @@
 <template>
   <div class="container-fluid">
     <!-- SECTION filters -->
-    <section class="row justify-content-center">
+    <section class="row justify-content-center ">
       <div class="col-5 bg-dark rounded p-1 filter-row">
         <section class="row  text-center">
           <div class="col-4  ">
             <button @click="getMyRecipes(account.id)" class="btn filter-btn" :class="{
               'activeFilter':
                 filter == 'myRecipe'
-            }">MyRecipes</button>
+            }" :disabled="!account.id">MyRecipes
+            </button>
           </div>
           <div class="col-4  ">
             <button @click="getAllRecipes" class="btn filter-btn " style="width:100px" :class="{
@@ -17,11 +18,14 @@
             }"> Home </button>
           </div>
           <div class=" col-4 ">
-            <button @click="getMyFavorite" class=" btn filter-btn " :class="{
+            <button :disabled="!account.id" @click="getMyFavorite" class=" btn filter-btn " :class="{
               'activeFilter':
                 filter == 'favorite'
             }">Favorites</button>
           </div>
+        </section>
+        <section v-if="!account.id" class="row  border-bottom-3  border-top border-white">
+          <h5 class="text-center mt-2">Please Login to access personal features</h5>
         </section>
       </div>
 
@@ -29,12 +33,12 @@
     <!-- SECTION Card -->
     <section class=" row mx-3">
       <div v-for="r in recipes" class="col-4">
-        <RecipeCard :recipe="r" class="selectable" />
+        <RecipeCard :recipe="r" />
       </div>
     </section>
 
 
-    <section class="row">
+    <section class="row" v-if="account.id">
       <button href="#" class="float-right btn rounded-circle bg-dark d-flex justify-content-center align-items-center"
         data-bs-toggle="modal" data-bs-target="#createModal" title="Create Group">
         <i class="mdi mdi-plus fs-1"></i>
@@ -45,7 +49,7 @@
 </template>
 
 <script>
-import { computed, reactive, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import Pop from '../utils/Pop.js';
 import { logger } from '../utils/Logger.js';
 import { recipesService } from '../services/RecipesService.js'
@@ -67,6 +71,7 @@ export default {
     }
     onMounted(() => {
       getRecipes();
+
     })
     return {
       recipes: computed(() => AppState.recipes),

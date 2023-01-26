@@ -10,10 +10,10 @@
 
         </ul>
         <div class="row">
-          <div class="input-group ">
-            <input type="text" class="form-control" placeholder="Search Recipes" aria-label="Search Recipes"
-              aria-describedby="basic-addon2">
-          </div>
+          <form @submit.prevent="searchRecipe" class="input-group ">
+            <input v-model="input.param" type="text" class="form-control" placeholder="Search Recipes"
+              aria-label="Search Recipes" aria-describedby="basic-addon2">
+          </form>
         </div>
         <!-- LOGIN COMPONENT HERE -->
         <Login />
@@ -24,10 +24,29 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue';
+
 import Login from './Login.vue'
+import Pop from '../utils/Pop.js';
+import { logger } from '../utils/Logger.js';
+import { recipesService } from '../services/RecipesService.js';
 export default {
   setup() {
-    return {}
+    const input = ref({})
+
+    return {
+      input,
+      async searchRecipe() {
+        try {
+          await recipesService.searchRecipe(input.value)
+
+          input.value = {}
+        } catch (error) {
+          Pop.error(error)
+          logger.error(error)
+        }
+      },
+    }
   },
   components: { Login }
 }

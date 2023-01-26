@@ -52,6 +52,53 @@ class RecipesService {
 
         logger.log('Removed and updated Recipes ',)
     }
+    async favoriteRecipe(recipeId) {
+        const res = await api.post('api/favorites', { recipeId })
+
+        logger.log('Liked Recipe ', res.data)
+
+        AppState.unalterFav.push(res.data)
+
+    }
+    async unfavoriteRecipe(recipeId) {
+        debugger
+        let foundFav = AppState.unalterFav.find(uf => uf.recipeId == recipeId)
+        logger.log('Found fav ', foundFav)
+        const res = await api.delete(`api/favorites/${foundFav.id}`,)
+        AppState.unalterFav = AppState.unalterFav.filter(uf => uf.recipeId != recipeId)
+
+        logger.log('Unliked Here is the appstate ', AppState.unalterFav)
+    }
+    // TODO work on getting recipes to work 
+    async searchRecipe(searchInput) {
+        logger.log('searching with the param ', searchInput.param)
+        const res = await api.get(`api/recipes?id=180`)
+
+        logger.log("[Searching Recipes]", res.data)
+    }
+    async updateRecipe(updateData, recipeId) {
+        logger.log('Here is the update data ', updateData)
+        const res = await api.put(`api/recipes/${recipeId}`, updateData)
+        AppState.activeRecipe = res.data
+        logger.log("[Recipe Up  dated ]", res.data)
+    }
+    async addIngredient(ingredientData, recipeId) {
+        ingredientData.recipeId = recipeId
+        logger.log('Here is the ingredient data ', ingredientData)
+        const res = await api.post(`api/ingredients`, ingredientData)
+        AppState.activeIngredients.push(res.data)
+        logger.log("[Ingredient Updated ]", res.data)
+    }
+    async removeIngredient(ingredientId) {
+        const res = await api.delete(`api/ingredients/${ingredientId}`)
+
+        logger.log('Removed ingre res', res.data)
+
+        AppState.activeIngredients = AppState.activeIngredients.filter(aI => aI.id != ingredientId)
+
+    }
+
+
 
 }
 

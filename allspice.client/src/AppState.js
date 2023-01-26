@@ -12,5 +12,7 @@ export const AppState = reactive({
   activeIngredients: [],
 
   filter: "home",
-  edit: false
+  edit: false,
+  favorites: [],
+  unalterFav: []
 })

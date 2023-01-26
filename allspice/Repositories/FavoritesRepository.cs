@@ -32,16 +32,14 @@ public class FavoritesRepository
     fav.*,
     rec.*,
     cr.*
-    FROM favorites fav
-    JOIN recipes rec ON rec.id = fav.recipeId
+    FROM recipes rec
+    JOIN favorites fav ON fav.recipeId = rec.id
     JOIN accounts cr ON rec.creatorId = cr.id
     WHERE fav.accountId = @accountId; 
     ";
         List<MyFavorites> myFavorites = _db.Query<MyFavorites, Favorite, Account, MyFavorites>(sql, (fav, rec, cr) =>
         {
 
-            fav.RecipeId = rec.Id;
-            fav.AccountId = cr.Id;
             fav.FavoriteId = fav.Id;
             return fav;
         }, new { accountId }).ToList();

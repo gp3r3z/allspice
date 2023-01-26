@@ -7,27 +7,43 @@ class AccountService {
     try {
       const res = await api.get('/account')
       AppState.account = res.data
+
+      this.getFavoriteData()
     } catch (err) {
       logger.error('HAVE YOU STARTED YOUR SERVER YET???', err)
     }
   }
 
-  // TODO working on getting my favorites
-  async getMyFavorite() {
-    logger.log('FE getting recipe by account')
 
+  async getMyFavorite() {
+    // FIXME working on updating the appstate after unfavoriting for reactivity
+    // logger.log('FE response', responseData)
+    const favoriteData = AppState.unalterFav
+
+    if (AppState.favorites != '') {
+      AppState.recipes = AppState.favorites
+    }
+    else {
+      favoriteData.map(data => {
+        const same = AppState.recipes.filter(obj => {
+          return data.recipeId == obj.id
+        })
+        // logger.log("Here is the same ", same)
+        AppState.favorites.push(same[0])
+        return same
+      })
+      AppState.recipes = AppState.favorites
+
+    }
+    logger.log(AppState.favorites, ' favorites updated')
+
+  }
+  async getFavoriteData() {
     const res = await api.get(`account/favorites`)
 
-    const responseData = res.data
-    logger.log('FE response', responseData)
-
-
-    // let favRecipes = AppState.recipes.filter(r => responseData.filter(rd => console.log(rd.recipeId == r.id)))
-    let favRecipes = responseData.filter(r => r.recipeId == AppState.recipes.id)
-
-    // AppState.recipes = res.data
-    logger.log("Here are the recipes ", favRecipes)
-
+    // NOTE created another appstate to use the data to compare against 
+    AppState.unalterFav = res.data
+    logger.log('Getting Fav data ', AppState.unalterFav)
   }
 }
 

@@ -26,8 +26,6 @@ public class IngredientsService
     }
     internal string Remove(int id, string userId)
     {
-        Recipe original = _recipesService.GetOne(id);
-        Console.WriteLine("[server ] orginal receipt to remove " + original);
 
         // if (original.CreatorId != userId)
         // {
@@ -36,6 +34,6 @@ public class IngredientsService
 
         // NOTE regular delete
         _repo.Remove(id);
-        return $"{original.Title} has been removed";
+        return "Ingredient has been removed";
     }
 }
